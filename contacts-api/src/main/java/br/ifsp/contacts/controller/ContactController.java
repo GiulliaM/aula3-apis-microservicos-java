@@ -28,7 +28,7 @@ public class ContactController {
     public Contact getContactId(@PathVariable Long id){ //@PathVariable "amarra" a variável {id} da URL
         // findById retorna um Optional, então usamos orElseThrow
         return contactRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contato não encontrado!"))
+                .orElseThrow(() -> new RuntimeException("Contato não encontrado!"));
     }
 
     @PostMapping//indica metodo POST (create)
