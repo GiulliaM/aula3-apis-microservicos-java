@@ -53,4 +53,9 @@ public class ContactController {
         contactRepository.deleteById(id);
     }
 
+    @GetMapping("/search") //metodo GET para buscar contato pelo nome
+    public List<Contact> getContactByName(@RequestParam("name") String nome){
+        return contactRepository.findByNomeContainingIgnoreCase(nome); //metodo assinado no repository
+    }
+
 }
