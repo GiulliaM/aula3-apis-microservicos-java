@@ -6,6 +6,7 @@ import br.ifsp.contacts.repository.ContactRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import br.ifsp.contacts.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class ContactController {
     public ContactResponseDTO getContactId(@PathVariable Long id){ //@PathVariable "amarra" a variável {id} da URL
         // findById retorna um Optional, então usamos orElseThrow
         Contact contact = contactRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contato não encontrado!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contato com ID:" + id+ "não encontrado"));
         return new ContactResponseDTO(contact);
     }
 
@@ -46,7 +47,7 @@ public class ContactController {
     @PutMapping("/{id}") //metodo PUT de update pelo id do contato
     public ContactResponseDTO updateContact(@PathVariable Long id, @Valid @RequestBody Contact updateContact){
         Contact existingContact = contactRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Contato não encontrado " + id)); //caso não encontrado
+                .orElseThrow(()-> new ResourceNotFoundException("Contato com ID:" + id+ "não encontrado")); //caso não encontrado
 
         existingContact.setNome(updateContact.getNome()); //atualiza nome
         existingContact.setTelefone(updateContact.getTelefone()); //atualiza telefone
@@ -58,7 +59,10 @@ public class ContactController {
 
     @DeleteMapping("/{id}") //metodo DELETE contato pelo id
     public void deleleContact(@PathVariable Long id){
-        contactRepository.deleteById(id);
+        Contact existingContact = contactRepository.findById(id)
+            .orElseThrow(()-> new ResourceNotFoundException("Nãao foi possível deletar contato ID:" +id+ ".Contato não encontrado"));
+
+        contactRepository.delete(existingContact);
     }
 
     @GetMapping("/search") //metodo GET para buscar contato pelo nome
@@ -71,7 +75,7 @@ public class ContactController {
     @PatchMapping("/{id}")// metodo PATH para atualizar apenas um ou mais campos
     public ContactResponseDTO pathUpdateContact (@PathVariable Long id, @RequestBody Contact parcialContact){
         Contact existingContact = contactRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Contato não encontrado " + id)); //busca se o contato existe pelo id
+                .orElseThrow(()-> new ResourceNotFoundException("Contato com o ID " + id + " não encontrado!")); //busca se o contato existe pelo id
 
         if (parcialContact.getNome() != null && !parcialContact.getNome().isBlank()){ //nn atualizar dado nulo
             existingContact.setNome(parcialContact.getNome()); //update nome
