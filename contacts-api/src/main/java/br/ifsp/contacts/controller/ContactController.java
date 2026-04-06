@@ -2,6 +2,7 @@ package br.ifsp.contacts.controller;
 
 import br.ifsp.contacts.model.Contact;
 import br.ifsp.contacts.repository.ContactRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +33,12 @@ public class ContactController {
     }
 
     @PostMapping//indica metodo POST (create)
-    public Contact createContact(@RequestBody Contact contact){ //@RequestBody indica que o objeto Contact será preenchido
+    public Contact createContact(@Valid @RequestBody Contact contact){ //@RequestBody indica que o objeto Contact será preenchido
         return contactRepository.save(contact);
     }
 
     @PutMapping("/{id}") //metodo PUT de update pelo id do contato
-    public Contact updateContact(@PathVariable Long id, @RequestBody Contact updateContact){
+    public Contact updateContact(@PathVariable Long id, @Valid @RequestBody Contact updateContact){
         Contact existingContact = contactRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Contato não encontrado " + id)); //caso não encontrado
 
