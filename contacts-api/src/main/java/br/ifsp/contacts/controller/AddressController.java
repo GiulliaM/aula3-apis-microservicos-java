@@ -6,6 +6,7 @@ import br.ifsp.contacts.model.Address;
 import br.ifsp.contacts.model.Contact;
 import br.ifsp.contacts.repository.AddressRepository;
 import br.ifsp.contacts.repository.ContactRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +39,10 @@ public class AddressController {
     }
 
     @PostMapping
-    public Address createAddress(@RequestBody AddressRequest addressRequest) {
+    public Address createAddress(@Valid @RequestBody AddressRequest addressRequest) {
         Contact contact = contactRepository.findById(addressRequest.getContactId())
-                .orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contato com id: " +addressRequest.getContactId()+ " " +
+                        "não encontrado"));
 
         Address address = new Address();
         address.setRua(addressRequest.getRua());
@@ -49,6 +51,7 @@ public class AddressController {
         address.setCep(addressRequest.getCep());
         address.setContact(contact);
 
-        return addressRepository.save(address);
+        Address saveAddress = addressRepository.save(address);
+        return saveAddress;
     }
 }
